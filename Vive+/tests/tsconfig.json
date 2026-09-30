@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true
+  },
+  "include": ["./**/*.ts", "../lib/**/*.ts", "../backend/services/tarifas-segunda-mano.ts"]
+}

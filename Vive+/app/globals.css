@@ -1,0 +1,533 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&display=swap');
+@import 'tailwindcss';
+
+/* ══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — fuente única de verdad para colores, sombras,
+   gradientes y espaciados de toda la aplicación.
+   ══════════════════════════════════════════════════════════════════ */
+:root {
+  /* ── Colores de marca ── */
+  --primary:        #EC4899;   /* magenta */
+  --primary-hover:  #DB2777;
+  --primary-light:  #FDF2F8;
+  --primary-glow:   rgba(236,72,153,0.20);
+
+  --secondary:      #9333EA;   /* púrpura */
+  --secondary-hover:#7C3AED;
+  --secondary-light:#F5F0FF;
+  --secondary-glow: rgba(147,51,234,0.20);
+
+  --accent:         #1D4ED8;   /* azul marino */
+  --accent-light:   #EFF6FF;
+  --accent-glow:    rgba(29,78,216,0.18);
+
+  /* ── Tintas / texto ── */
+  --ink:       #0F172A;   /* casi negro */
+  --ink-mid:   #334155;
+  --ink-light: #64748B;
+  --ink-faint: #94A3B8;
+
+  /* ── Fondos ── */
+  --bg:           #FFFFFF;
+  --bg-soft:      #F8F5FF;
+  --bg-primary:   #FDF2F8;   /* rosa muy suave */
+  --bg-secondary: #F5F0FF;   /* lavanda suave */
+
+  /* ── Bordes ── */
+  --border-color: #EDE9FE;
+  --border-light: #F5F0FF;
+
+  /* ── Gradientes ── */
+  --gradient-primary: linear-gradient(135deg, #EC4899, #9333EA);
+  --gradient-full:    linear-gradient(135deg, #EC4899 0%, #9333EA 50%, #1D4ED8 100%);
+  --hero-overlay:     linear-gradient(180deg,rgba(29,78,216,.30) 0%,rgba(29,78,216,.10) 30%,rgba(147,51,234,.45) 78%,rgba(15,10,30,.88) 100%);
+
+  /* ── Sombras ── */
+  --shadow-sm:  0 2px 8px rgba(236,72,153,0.10);
+  --shadow:     0 4px 24px rgba(236,72,153,0.12);
+  --shadow-md:  0 8px 28px rgba(147,51,234,0.15);
+  --shadow-lg:  0 12px 48px rgba(147,51,234,0.18);
+  --shadow-xl:  0 24px 64px rgba(147,51,234,0.22);
+
+  /* ── Alias de compatibilidad (páginas que aún usan los nombres viejos) ── */
+  --teal:       #EC4899;
+  --teal-light: #F472B6;
+  --teal-dark:  rgba(236,72,153,0.45);
+  --teal-50:    #FDF2F8;
+  --teal-100:   #FBCFE8;
+  --gold:       #9333EA;
+  --gold-light: #A855F7;
+  --cream:      #FFFFFF;
+  --sand:       #F5F3FF;
+  --slate:      #0F172A;
+  --muted:      #334155;
+  --radius:     14px;
+
+  /* ── shadcn compat ── */
+  --background:          oklch(1 0 0);
+  --foreground:          oklch(0.145 0 0);
+  --card:                oklch(1 0 0);
+  --card-foreground:     oklch(0.145 0 0);
+  --popover:             oklch(1 0 0);
+  --popover-foreground:  oklch(0.145 0 0);
+  --primary-sc:          oklch(0.65 0.24 350);
+  --primary-foreground:  oklch(1 0 0);
+  --secondary-sc:        oklch(0.52 0.22 290);
+  --secondary-foreground:oklch(1 0 0);
+  --muted-bg:            oklch(0.97 0 0);
+  --muted-fg:            oklch(0.556 0 0);
+  --accent-sc:           oklch(0.52 0.22 290);
+  --accent-foreground:   oklch(1 0 0);
+  --destructive:         oklch(0.577 0.245 27.325);
+  --border:              oklch(0.922 0 0);
+  --input:               oklch(0.922 0 0);
+  --ring:                oklch(0.65 0.24 350);
+  --r:                   0.625rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BASE
+   ══════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { overflow-x: clip; max-width: 100vw; }
+
+/* El scroll es el normal del navegador, sin saltos automáticos entre
+   secciones. Antes lo forzaban ocho listeners de `wheel` con
+   preventDefault, uno por página, que cancelaban la rueda del ratón y en
+   dos casos también las teclas de navegación. */
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: clip;
+  max-width: 100vw;
+  width: 100%;
+}
+
+p  { font-size: 1rem; line-height: 1.8; }
+h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; line-height: 1.15; }
+
+/* ══════════════════════════════════════════════════════════════════
+   KEYFRAMES GLOBALES
+   ══════════════════════════════════════════════════════════════════ */
+@keyframes pageIn      { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+@keyframes fadeUp      { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
+@keyframes fadeInScale { from { opacity:0; transform:scale(.85) translateY(10px); } to { opacity:1; transform:none; } }
+@keyframes slideUp     { from { opacity:0; transform:translateY(36px); } to { opacity:1; transform:none; } }
+@keyframes shimmer     { from { transform:translateX(-100%); } to { transform:translateX(100%); } }
+@keyframes spin        { to { transform:rotate(360deg); } }
+@keyframes ping        { 0%{transform:scale(1);opacity:1} 75%,100%{transform:scale(2.2);opacity:0} }
+@keyframes blink       { 0%,100%{opacity:.4} 50%{opacity:1} }
+@keyframes bounce-y    { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+/* hero específicos */
+@keyframes snRise      { to { transform:translateY(0); } }
+@keyframes snFade      { to { opacity:1; } }
+@keyframes snScrollDot { 0%{top:-20px;opacity:0} 20%{opacity:1} 80%{opacity:1} 100%{top:46px;opacity:0} }
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO CINEMATOGRÁFICO — compartido por todas las páginas
+   ══════════════════════════════════════════════════════════════════ */
+.sn-hero {
+  position: relative;
+  height: 100vh;
+  min-height: 640px;
+  /* `clip` y no `hidden`, y de esto depende que la rueda del ratón funcione.
+     `overflow: hidden` convierte al hero en un contenedor con scroll propio, y
+     el fondo (.sn-hero__bg) se sale 8% por cada lado a propósito, así que
+     siempre hay contenido desbordado. Con la rueda encima del hero el
+     navegador intentaba desplazar ese contenedor —que no se puede desplazar—
+     y no pasaba el gesto a la página: la rueda no hacía nada y solo se podía
+     bajar arrastrando la barra lateral.
+
+     `clip` recorta exactamente igual pero no crea contenedor de scroll, así
+     que la rueda llega a la página. Es el mismo recurso que ya usan html y
+     body más abajo. */
+  overflow: clip;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.sn-hero__bg {
+  position: absolute;
+  inset: -8%;
+  z-index: -2;
+  will-change: transform;
+  background-size: cover;
+  background-position: center;
+}
+.sn-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--hero-overlay);
+}
+.sn-hero__inner {
+  text-align: center;
+  max-width: 1100px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+  will-change: transform, opacity;
+}
+.sn-hero__title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(72px, 12vw, 160px);
+  line-height: .95;
+  letter-spacing: -.03em;
+  margin: 28px 0 24px;
+}
+.sn-hero__sub {
+  font-size: clamp(15px, 1.4vw, 19px);
+  max-width: 680px;
+  margin: 0 auto;
+  font-weight: 300;
+  opacity: 0;
+  animation: snFade .9s ease .55s forwards;
+}
+.sn-hero__scroll {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,.85);
+  font-size: 11px;
+  letter-spacing: .3em;
+  font-weight: 500;
+  opacity: 0;
+  animation: snFade .9s ease .9s forwards;
+}
+.sn-hero__bar {
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+  position: relative;
+  overflow: clip;
+}
+.sn-hero__bar::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: -20px;
+  width: 3px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 2px;
+  animation: snScrollDot 2s ease-in-out infinite;
+}
+
+/* Eyebrow pill del hero */
+.sn-eyebrow-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.14);
+  color: #fff;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.sn-eyebrow-hero::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+  flex-shrink: 0;
+}
+
+/* Animación de palabras del título */
+.sn-word {
+  display: inline-block;
+  /* Mismo motivo que en .sn-hero: recorta la palabra que entra deslizándose
+     sin convertirse en contenedor de scroll. Y aquí importa, porque estas
+     palabras son el titular del hero: ocupan media pantalla, y con `hidden`
+     la rueda encima del título no llegaba a la página. */
+  overflow: clip;
+  vertical-align: bottom;
+  padding: 0 .12em;
+  margin: 0 -.12em;
+}
+.sn-word > span {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: snRise .9s cubic-bezier(.2,.7,.2,1) forwards;
+  padding: 0 .04em;
+}
+.sn-word.delay > span  { animation-delay: .18s; }
+.sn-word.gold  > span  { color: var(--primary); font-style: italic; }
+
+/* ══════════════════════════════════════════════════════════════════
+   TOPBAR FLOTANTE — compartida por todas las páginas
+   ══════════════════════════════════════════════════════════════════ */
+.sn-topbar {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 999px;
+  background: rgba(147,51,234,.38);
+  backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.85);
+  font-size: 14px;
+  z-index: 39;
+  transition: background .4s, color .4s, border-color .4s, box-shadow .4s;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px var(--secondary-glow);
+}
+.sn-topbar.dark {
+  background: rgba(255,255,255,.82);
+  color: var(--ink);
+  border-color: rgba(147,51,234,0.12);
+  box-shadow: 0 10px 30px -10px var(--secondary-glow);
+}
+.sn-topbar__brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: .08em;
+  padding: 10px 18px;
+  border-radius: 999px;
+}
+.sn-topbar__brand .plus { color: var(--primary); }
+.sn-topbar__links { display: flex; gap: 2px; }
+.sn-topbar__link {
+  color: inherit;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  transition: background .2s, color .2s;
+}
+.sn-topbar__link:hover                    { background: rgba(255,255,255,.14); }
+.sn-topbar.dark .sn-topbar__link:hover    { background: rgba(147,51,234,.07); }
+.sn-topbar__link.sn-active                { background: var(--ink); color: #fff; }
+.sn-topbar.dark .sn-topbar__link.sn-active{ background: var(--ink); color: #fff; }
+
+/* ══════════════════════════════════════════════════════════════════
+   BOTONES COMPARTIDOS
+   ══════════════════════════════════════════════════════════════════ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gradient-primary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 36px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  transition: transform .22s ease, box-shadow .22s ease;
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px var(--primary-glow);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: var(--ink);
+  border: 1.5px solid var(--border-color);
+  border-radius: 999px;
+  padding: 13px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  transition: border-color .2s, background .2s, transform .2s;
+}
+.btn-ghost:hover {
+  border-color: var(--primary);
+  background: var(--bg-primary);
+  transform: translateY(-2px);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TARJETAS COMPARTIDAS
+   ══════════════════════════════════════════════════════════════════ */
+.card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BADGES / PILLS COMPARTIDOS
+   ══════════════════════════════════════════════════════════════════ */
+.badge-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  color: white;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.badge-secondary {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   UTILIDADES COMPARTIDAS
+   ══════════════════════════════════════════════════════════════════ */
+.hidden-mobile { display: block; }
+.page-enter {
+  animation: pageIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: var(--bg);
+}
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.fade-visible { opacity: 1; transform: none; }
+@media (max-width: 767px) {
+  .fade-up, .fade-up.fade-visible { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--sand); }
+::-webkit-scrollbar-thumb { background: var(--teal-100); border-radius: 99px; }
+
+/* ── Page hero (variante simple con fondo plano) ── */
+.page-hero        { padding: 80px 40px 72px; text-align: center; }
+.page-hero-inner  { max-width: 700px; margin: 0 auto; }
+.page-hero .eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+.page-hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); color: white; margin: 12px 0 20px; }
+.page-hero p  { color: rgba(255,255,255,0.88); font-size: 18px; line-height: 1.8; }
+
+/* ── Filter pills ── */
+.filter-bar  { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 48px; }
+.filter-pill {
+  border-radius: 99px;
+  padding: 8px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+.filter-pill.active   { background: var(--primary); color: white; border: 1px solid var(--primary); }
+.filter-pill.inactive { background: white; color: var(--muted); border: 1px solid var(--sand); }
+
+/* ── Shimmer skeleton ── */
+.shimmer-line { position: relative; overflow: hidden; }
+.shimmer-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 3s infinite;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE GLOBAL
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .hidden-mobile { display: none !important; }
+}
+@media (max-width: 900px) {
+  .desktop-nav  { display: none !important; }
+  .mobile-burger{ display: flex !important; }
+  .hero-stats   { display: none !important; }
+  .footer-grid  { grid-template-columns: 1fr 1fr !important; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+@media (max-width: 768px) {
+  .sn-hero__title  { font-size: clamp(44px, 10vw, 72px) !important; }
+  .sn-hero         { min-height: 500px; }
+  .sn-hero__inner  { padding: 0 16px; }
+  .story-grid      { grid-template-columns: 1fr !important; }
+  .stats-grid      { grid-template-columns: repeat(2, 1fr) !important; }
+  .contact-grid    { grid-template-columns: 1fr !important; }
+  .page-hero       { padding: 60px 24px 52px; }
+  .hero-grid       { grid-template-columns: 1fr !important; gap: 60px !important; }
+  .hero-video-section  { order: 2 !important; align-self: center !important; padding-top: 0 !important; }
+  .hero-content-section{ order: 1 !important; text-align: center !important; align-self: center !important; }
+}
+@media (max-width: 600px) {
+  .tab-label  { display: none; }
+  .filter-bar { gap: 6px; }
+}
+@media (max-width: 560px) {
+  .sn-topbar__links { display: none; }
+}
+@media (max-width: 480px) {
+  body               { font-size: 16px; }
+  .sn-hero__title    { font-size: clamp(34px, 9vw, 48px) !important; }
+  .sn-hero           { min-height: 400px; }
+  .sn-hero__inner    { padding: 0 12px; }
+  .sn-hero__sub      { font-size: 14px !important; }
+  .sn-eyebrow-hero   { font-size: 10px; padding: 6px 14px; }
+  .hero-grid         { gap: 40px !important; }
+  .page-hero         { padding: 40px 16px 40px !important; }
+  .page-hero h1      { font-size: clamp(2.2rem, 10vw, 3rem) !important; }
+  .page-hero p       { font-size: 16px !important; }
+}
+@media (max-width: 375px) {
+  body          { font-size: 15px; }
+  .page-hero    { padding: 32px 14px 32px !important; }
+  .filter-pill  { padding: 6px 14px; font-size: 13px; }
+}
