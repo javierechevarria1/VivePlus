@@ -11,6 +11,8 @@ import {
   User, Mail, Phone, Home, Shield,
 } from "lucide-react";
 
+const LOCAL_DEMO = process.env.NEXT_PUBLIC_LOCAL_DEMO === "true";
+
 // Typestype Step = "cart" | "shipping" | "payment" | "success";
 
 type ShippingData = {
@@ -1218,10 +1220,14 @@ function CartStepPayment({
         {/* El campo de titular ya no es necesario, lo rellena el usuario en Stripe */}
             <div className="cart-stripe-info">
               <Lock size={16} />
-              Serás redirigido a la pasarela 100% segura de Stripe para introducir los datos de tu tarjeta.
+              {LOCAL_DEMO
+                ? "Pago de demostración: no introduzcas datos bancarios. Al pulsar pagar, se simulará la compra sin ningún cargo."
+                : "Serás redirigido a la pasarela 100% segura de Stripe para introducir los datos de tu tarjeta."}
             </div>
 
-            <CartCardPreview numero={payment.numero} titular={payment.titular} expiry={payment.expiry} />
+            {!LOCAL_DEMO && (
+              <CartCardPreview numero={payment.numero} titular={payment.titular} expiry={payment.expiry} />
+            )}
           </div>
         )}
 
@@ -1332,7 +1338,7 @@ function CartStepPayment({
             </>
           ) : (
             <>
-              <Lock size={14} /> Pagar €{desglose.total.toFixed(2)}
+              <Lock size={14} /> {LOCAL_DEMO ? "Simular pago" : "Pagar"} €{desglose.total.toFixed(2)}
             </>
           )}
         </button>
@@ -1436,8 +1442,10 @@ function CartStepSuccess({
           maxWidth: 320,
         }}
       >
-        Gracias, <strong style={{ color: "#0F172A" }}>{shipping.nombre || "cliente"}</strong>. Hemos recibido tu pedido y recibirás una confirmación en{" "}
-        <strong style={{ color: "#EC4899" }}>{shipping.email || "tu email"}</strong>.
+        {LOCAL_DEMO
+          ? <>Demostración completada para <strong style={{ color: "#0F172A" }}>{shipping.nombre || "cliente"}</strong>. No se ha realizado ningún cargo ni se ha enviado un pedido real.</>
+          : <>Gracias, <strong style={{ color: "#0F172A" }}>{shipping.nombre || "cliente"}</strong>. Hemos recibido tu pedido y recibirás una confirmación en{" "}
+            <strong style={{ color: "#EC4899" }}>{shipping.email || "tu email"}</strong>.</>}
       </p>
 
       <div
@@ -1486,7 +1494,7 @@ function CartStepSuccess({
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 17, color: "#0F172A", fontWeight: 600 }}>
-            Total pagado
+            {LOCAL_DEMO ? "Total de demostración" : "Total pagado"}
           </span>
           <strong style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, color: "#EC4899" }}>
             €{paidTotal.toFixed(2)}
@@ -1494,16 +1502,16 @@ function CartStepSuccess({
         </div>
       </div>
 
-      <div
-        className="cart-delivery-info"
-      >
-        <Truck size={15} color="#EC4899" />
-        <p
+      {!LOCAL_DEMO && (
+        <div className="cart-delivery-info">
+          <Truck size={15} color="#EC4899" />
+          <p
           className="cart-delivery-info"
-        >
-          Entrega estimada: <strong>2-4 días hábiles</strong>
-        </p>
-      </div>
+          >
+            Entrega estimada: <strong>2-4 días hábiles</strong>
+          </p>
+        </div>
+      )}
 
       <button type="button" className="checkout-btn" onClick={onClose}>
         Volver a la tienda
@@ -1758,6 +1766,13 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     dispatchCheckout({ type: "pagoIniciado" });
 
     try {
+      if (LOCAL_DEMO) {
+        await new Promise((resolve) => setTimeout(resolve, 700));
+        dispatchCheckout({ type: "pagoCompletado", total: desglose.total });
+        if (!compraDirecta) clearCart();
+        return;
+      }
+
       if (payment.metodo === "card") {
         const direccionEnvio = [
           `${shipping.nombre} ${shipping.apellidos}`.trim(),

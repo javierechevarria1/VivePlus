@@ -253,7 +253,7 @@ function AccordionRow({ label, options, selected, onSelect, thumbFn }: {
           </span>
           {/* Miniatura de la selección actual */}
           <div style={PM_ACCORDION_THUMB}>
-            <Image fill sizes="100vw" src={thumbFn(selected)} alt="sel" style={{ objectFit: "cover" }} />
+            <Image unoptimized fill sizes="100vw" src={thumbFn(selected)} alt="sel" style={{ objectFit: "cover" }} />
           </div>
         </div>
         <ChevronDown
@@ -298,7 +298,7 @@ function AccordionRow({ label, options, selected, onSelect, thumbFn }: {
                   title={opt}
                   style={{ ...PM_OPT_BTN_BASE, border: sel ? "2.5px solid var(--teal)" : "2px solid rgba(0,0,0,0.07)", boxShadow: sel ? "0 0 0 2px white, 0 0 0 4px var(--teal)" : "none", transform: sel ? "scale(1.1)" : "scale(1)" }}
                 >
-                  <Image fill sizes="100vw" src={thumbFn(opt)} alt={opt} style={{ objectFit: "cover" }} />
+                  <Image unoptimized fill sizes="100vw" src={thumbFn(opt)} alt={opt} style={{ objectFit: "cover" }} />
                 </button>
               );
             })}
@@ -714,7 +714,7 @@ function ProfileAvatarCustomTab({
       {/* Vista previa */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
         <div style={{ ...PM_AVATAR_PREVIEW_BASE, background: `#${bgColor}` }}>
-          <Image fill sizes="96px" src={currentUrl} alt="Tu avatar" style={{ objectFit: "cover" }} />
+          <Image unoptimized fill sizes="96px" src={currentUrl} alt="Tu avatar" style={{ objectFit: "cover" }} />
         </div>
         <span style={{ fontSize: 12, color: "var(--muted)", fontFamily: "'DM Sans', sans-serif" }}>Vista previa</span>
       </div>

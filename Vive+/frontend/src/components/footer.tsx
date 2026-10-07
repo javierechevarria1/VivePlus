@@ -1,14 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram, Heart } from "lucide-react";
+import { Linkedin, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
-
-const TikTokIcon = ({ size = 15 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
-  </svg>
-);
 
 const SERVICES = [
   { href: "/salud",          label: "Salud y bienestar" },
@@ -41,8 +35,7 @@ const LEGAL: { label: string; href: string }[] = [
 
 
 const SOCIALS = [
-  { href: "https://www.instagram.com/netbeesbc/", icon: Instagram,  label: "Instagram" },
-  { href: "https://www.tiktok.com/@netbeesbc",   icon: TikTokIcon, label: "TikTok" },
+  { href: "https://www.linkedin.com/in/javier-echevarría-traspuesto-ab3755258/", icon: Linkedin, label: "LinkedIn" },
 ];
 
 export default function Footer() {
