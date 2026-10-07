@@ -20,8 +20,7 @@ INSERT INTO categorias_actividades (nombre, color, icono, orden) VALUES
   ('Arte',       '#9B59B6', 'Palette',      4),
   ('Cultura',    '#2563EB', 'Landmark',     5),
   ('Ocio',       '#C9923A', 'Coffee',       6),
-  ('Formación',  '#7B5EA7', 'GraduationCap', 7),
-  ('Tecnología', '#2563EB', 'Laptop',          8)
+  ('Formación',  '#7B5EA7', 'GraduationCap',7)
 ON CONFLICT (nombre) DO NOTHING;
 
 -- Productos

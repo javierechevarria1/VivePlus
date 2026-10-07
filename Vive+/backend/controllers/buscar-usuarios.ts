@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       `SELECT id, username FROM usuarios
        WHERE username ILIKE $1
          AND ($2::int IS NULL OR id != $2)
-         AND COALESCE(rol, 1) != 5
+         AND COALESCE(rol, 'usuario') != 'admin'
        ORDER BY username ASC
        LIMIT 10`,
       [`%${q}%`, excludeId ? parseInt(excludeId) : null]

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isLocalDemoEnabled } from "@/lib/local-demo-data";
 import * as controller from "@/backend/controllers/chat-audio";
 
 function demoUnavailable() {
@@ -10,11 +9,11 @@ function demoUnavailable() {
 }
 
 export async function GET(req: NextRequest) {
-  if (isLocalDemoEnabled()) return demoUnavailable();
+  if (process.env.LOCAL_DEMO === "true") return demoUnavailable();
   return controller.GET(req);
 }
 
 export async function POST(req: NextRequest) {
-  if (isLocalDemoEnabled()) return demoUnavailable();
+  if (process.env.LOCAL_DEMO === "true") return demoUnavailable();
   return controller.POST(req);
 }
