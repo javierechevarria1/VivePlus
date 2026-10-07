@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vive+
 
-## Getting Started
+Aplicación web de cuidado y acompañamiento para personas mayores de 55 años. Usa Next.js, PostgreSQL y servicios externos para autenticación, chat, pagos, email y envíos.
 
-First, run the development server:
+## Datos y base de datos local
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+No hay un backup de la base de datos anterior en el repositorio, así que no se pueden recuperar usuarios, conversaciones ni otros datos del servidor. Se añadió `backend/migrations/000_base_schema.sql`, un esquema inicial reconstruido a partir de las consultas de la aplicación, seguido de las migraciones existentes y sus datos de catálogo. Es una instalación nueva, no una copia exacta de la base privada antigua.
+
+## Requisitos
+
+- Node.js 20.9 o posterior y npm.
+- PostgreSQL 14 o posterior, con un usuario y una base de datos propios para Vive+.
+
+No es necesario Docker. No reutilices ni borres una base de datos local que pertenezca a otro proyecto.
+
+## Preparar el entorno
+
+Desde PowerShell, abre la carpeta `Vive+` del repositorio y ejecuta:
+
+```powershell
+npm ci
+Copy-Item .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Crea un rol y una base de datos nuevos desde pgAdmin o `psql`. Ejecuta cada sentencia por separado:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sql
+CREATE ROLE viveplus_local LOGIN PASSWORD 'elige-una-clave-local';
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```sql
+CREATE DATABASE viveplus OWNER viveplus_local;
+```
 
-## Learn More
+Edita `.env.local` para que `DB_USER`, `DB_PASSWORD` y los demás valores de PostgreSQL coincidan con esa instalación. Genera secretos distintos para `JWT_SECRET`, `NEXTAUTH_SECRET` y `CRON_SECRET`, por ejemplo:
 
-To learn more about Next.js, take a look at the following resources:
+```powershell
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Aplica el esquema y todas las migraciones una sola vez a esa base nueva:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```powershell
+.\scripts\migrate.ps1
+```
 
-## Deploy on Vercel
+El script lee `.env.local`, aplica cada archivo en orden, registra lo aplicado y se detiene si hay un error. Si la base ya tiene tablas pero no el registro de migraciones, se detiene para no truncar ni sobrescribir datos.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Para crear tu propia cuenta administradora, regístrate desde la web y después asígnale el rol `5` en pgAdmin:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```sql
+UPDATE usuarios SET rol = 5 WHERE LOWER(email) = LOWER('tu-correo@example.com');
+```
+
+Los valores de ejemplo de Stripe y Pusher solo permiten cargar la configuración y compilar; no habilitan pagos ni chat. SMTP y Sendcloud requieren credenciales propias para enviar correo o tramitar envíos. No pongas claves reales en `.env.example` ni las subas al repositorio.
+
+Si más adelante consigues un backup original, restáuralo en otra base distinta: no ejecutes el esquema reconstruido ni las migraciones iniciales sobre ese backup.
+
+## Ejecutar
+
+```powershell
+npm run dev
+```
+
+Abre <http://localhost:3000>. Para validar cambios:
+
+```powershell
+npm test
+npm run build
+```
+
+Las pruebas actuales no requieren una base de datos. La compilación necesita que las variables de autenticación, Stripe y Pusher estén definidas; la plantilla las incluye con valores locales no operativos.

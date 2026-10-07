@@ -114,7 +114,7 @@ INSERT INTO organizaciones (nombre, tipo, descripcion, web, email, telefono, dir
 ON CONFLICT DO NOTHING;
 
 -- Relaciones organizaciones ↔ servicios
-INSERT INTO organizaciones_servicios (organizacion_id, servicio_id)
+INSERT INTO organizacion_servicios (organizacion_id, servicios_id)
 SELECT o.id, s.id FROM organizaciones o, servicios s WHERE
   (o.nombre = 'Cruz Roja Cantabria'                    AND s.nombre IN ('Teleasistencia','Atención domiciliaria','Transporte adaptado','Apoyo social')) OR
   (o.nombre = 'Cáritas Santander'                      AND s.nombre IN ('Acompañamiento','Apoyo social','Formación a cuidadores')) OR
