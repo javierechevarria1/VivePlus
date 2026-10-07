@@ -1,0 +1,3 @@
+ALTER TABLE productos
+  ADD COLUMN IF NOT EXISTS stripe_price_id VARCHAR(255),
+  ADD COLUMN IF NOT EXISTS stripe_producto_id VARCHAR(255);
