@@ -166,9 +166,9 @@ const DEMO_SECOND_HAND = [
 ];
 
 const DEMO_ACTIVITIES = [
-  { id: 1, nombre: "Taller de memoria y estimulación cognitiva", descripcion: "Ejercicios prácticos de memoria, atención y razonamiento para mantener el cerebro activo.", categoria: "Salud", fecha: "2027-05-05T10:00:00.000Z", lugar: "Centro Cívico Cañadío", plazas_max: 20, duracion_min: 90, url: "https://www.santander.es/areas-tematicas/mayores", url_lugar: "https://www.google.com/maps/search/?api=1&query=Centro+C%C3%ADvico+Cañad%C3%ADo+Santander", imagen: "/img/actividades.jpg", inscritos: 4 },
-  { id: 2, nombre: "Yoga suave para mayores", descripcion: "Sesión adaptada para mejorar la flexibilidad, el equilibrio y reducir el estrés.", categoria: "Deporte", fecha: "2027-05-07T09:30:00.000Z", lugar: "Polideportivo Municipal de Santander", plazas_max: 15, duracion_min: 60, url: "https://www.santander.es/areas-tematicas/deportes", url_lugar: "https://www.google.com/maps/search/?api=1&query=Polideportivo+Municipal+Santander", imagen: "/img/actividades.jpg", inscritos: 7 },
-  { id: 3, nombre: "Paseo cultural por Santander", descripcion: "Paseo tranquilo por lugares emblemáticos de la ciudad acompañado por un guía local.", categoria: "Cultura", fecha: "2027-05-12T11:00:00.000Z", lugar: "Plaza del Ayuntamiento, Santander", plazas_max: 18, duracion_min: 120, url: "https://turismosantander.es/", url_lugar: "https://www.google.com/maps/search/?api=1&query=Ayuntamiento+Santander", imagen: "/img/actividades.jpg", inscritos: 6 },
+  { id: 1, nombre: "Taller de memoria y estimulación cognitiva", descripcion: "Ejercicios prácticos de memoria, atención y razonamiento para mantener el cerebro activo.", categoria: "Salud", fecha: "2027-05-05T10:00:00.000Z", lugar: "Centro Cívico Cañadío", plazas_max: 20, duracion_min: 90, url: "https://www.santander.es/areas-tematicas/mayores", url_lugar: "https://www.google.com/maps/search/?api=1&query=Centro+C%C3%ADvico+C%C3%B1ad%C3%ADo+Santander", imagen: "/img/foto_3.jpg", inscritos: 4 },
+  { id: 2, nombre: "Yoga suave para mayores", descripcion: "Sesión adaptada para mejorar la flexibilidad, el equilibrio y reducir el estrés.", categoria: "Deporte", fecha: "2027-05-07T09:30:00.000Z", lugar: "Polideportivo Municipal de Santander", plazas_max: 15, duracion_min: 60, url: "https://www.santander.es/areas-tematicas/deportes", url_lugar: "https://www.google.com/maps/search/?api=1&query=Polideportivo+Municipal+Santander", imagen: "/img/comunidad.png", inscritos: 7 },
+  { id: 3, nombre: "Paseo cultural por Santander", descripcion: "Paseo tranquilo por lugares emblemáticos de la ciudad acompañado por un guía local.", categoria: "Cultura", fecha: "2027-05-12T11:00:00.000Z", lugar: "Plaza del Ayuntamiento, Santander", plazas_max: 18, duracion_min: 120, url: "https://turismosantander.es/", url_lugar: "https://www.google.com/maps/search/?api=1&query=Ayuntamiento+Santander", imagen: "/img/Foto_2.jpg", inscritos: 6 },
 ];
 
 const DEMO_TESTIMONIALS = [
@@ -184,9 +184,9 @@ const DEMO_ORGANIZATIONS = [
 ];
 
 const DEMO_CAREGIVERS = [
-  { id: 1, cuidador_usuario_id: 501, name: "Ana Martínez", specialty: "Enfermería geriátrica", tag: "Cuidados a domicilio", hours: "Mañanas y tardes", rating: 4.9, reviews: 18, tipo: "enfermero", photo: "/img/cuidadores.png", color: "#EC4899", verificado: true },
-  { id: 2, cuidador_usuario_id: 502, name: "Carlos Ruiz", specialty: "Fisioterapia", tag: "Movilidad y rehabilitación", hours: "Horario flexible", rating: 4.8, reviews: 12, tipo: "fisioterapeuta", photo: "/img/cuidadores.png", color: "#2563EB", verificado: true },
-  { id: 3, cuidador_usuario_id: 503, name: "Laura Gómez", specialty: "Acompañamiento", tag: "Apoyo y bienestar", hours: "Mañanas", rating: 5, reviews: 9, tipo: "cuidador", photo: "/img/cuidadores.png", color: "#16A085", verificado: true },
+  { id: 1, cuidador_usuario_id: 501, name: "Ana Martínez", specialty: "Enfermería geriátrica", tag: "Cuidados a domicilio", hours: "Mañanas y tardes", rating: 4.9, reviews: 18, tipo: "enfermero", photo: "/img/doctora-ana-v2.jpg", color: "#EC4899", verificado: true },
+  { id: 2, cuidador_usuario_id: 502, name: "Carlos Ruiz", specialty: "Fisioterapia", tag: "Movilidad y rehabilitación", hours: "Horario flexible", rating: 4.8, reviews: 12, tipo: "fisioterapeuta", photo: "/img/doctor-carlos-v2.jpg", color: "#2563EB", verificado: true },
+  { id: 3, cuidador_usuario_id: 503, name: "Laura Gómez", specialty: "Acompañamiento", tag: "Apoyo y bienestar", hours: "Mañanas", rating: 5, reviews: 9, tipo: "cuidador", photo: "/img/doctora-laura-v2.jpg", color: "#16A085", verificado: true },
 ];
 
 const DEMO_ADS = [
