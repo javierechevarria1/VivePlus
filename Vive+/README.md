@@ -1,6 +1,6 @@
 # Vive+
 
-Aplicación web de cuidado y acompañamiento para personas mayores de 55 años. La configuración predeterminada de desarrollo ofrece una demo local que no necesita PostgreSQL ni credenciales de servicios externos.
+Aplicación web de cuidado y acompañamiento para personas mayores de 55 años. La configuración predeterminada ofrece una demo que no necesita PostgreSQL ni credenciales de servicios externos, tanto en local como en Vercel.
 
 ## Requisitos
 
@@ -29,4 +29,4 @@ npm run build
 
 ## Volver a conectar servicios reales
 
-Solo desactiva `LOCAL_DEMO` y `NEXT_PUBLIC_LOCAL_DEMO` cuando tengas una base de datos compatible con las migraciones y hayas configurado credenciales válidas para autenticación y los servicios externos. La demo no restaura usuarios, conversaciones ni datos privados del servidor antiguo.
+Solo desactiva `LOCAL_DEMO` y `NEXT_PUBLIC_LOCAL_DEMO` cuando tengas una base de datos compatible con las migraciones y hayas configurado credenciales válidas para autenticación y los servicios externos. Para hacerlo en Vercel, define ambas variables como `false` y vuelve a desplegar. La demo no restaura usuarios, conversaciones ni datos privados del servidor antiguo.
