@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { handleLocalDemoApi } from "@/lib/local-demo-data";
 import * as contactoModule from "../../../backend/controllers/contacto";
 import * as ubicacionModule from "../../../backend/controllers/ubicacion";
 import * as forgotPasswordModule from "../../../backend/controllers/forgot-password";
@@ -144,6 +145,9 @@ const controllerMap: Record<string, Record<string, unknown>> = {
 };
 
 async function handle(req: NextRequest, slug: string, method: string) {
+  const demoResponse = handleLocalDemoApi(req, slug);
+  if (demoResponse) return demoResponse;
+
   const apiModule = controllerMap[slug];
   if (!apiModule) {
     console.warn(`[API Router] Ruta no encontrada: /api/${slug}`);

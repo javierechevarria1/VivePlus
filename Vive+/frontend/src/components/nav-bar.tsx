@@ -421,11 +421,12 @@ export default function NavBar() {
   }, []);
 
   const handleLogout = async () => {
-    if (user?.id) {
+    if (user?.id && process.env.NEXT_PUBLIC_LOCAL_DEMO !== "true") {
       usuarioService.pingOffline(user.id);
     }
     sessionStorage.removeItem("r65_authed");
     sessionStorage.removeItem("r65_user:v1");
+    localStorage.removeItem("viveplus:demo:session:v1");
     // La cookie es HttpOnly: solo el servidor puede borrarla.
     await fetch("/api/logout", { method: "POST" }).catch(() => {});
     window.dispatchEvent(new CustomEvent("relatia-auth-changed"));

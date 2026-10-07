@@ -29,6 +29,19 @@ function initials(name: string) {
 }
 
 const colors = ["#EC4899","#9333EA","#1D4ED8","#DB2777","#7C3AED","#2563EB"];
+const LOCAL_DEMO = process.env.NEXT_PUBLIC_LOCAL_DEMO === "true";
+const DEMO_TESTIMONIALS_KEY = "viveplus:demo:testimonios:v1";
+
+function includeDemoTestimonials(testimonios: Testimonio[]): Testimonio[] {
+  if (!LOCAL_DEMO) return testimonios;
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(DEMO_TESTIMONIALS_KEY) ?? "[]");
+    return Array.isArray(saved) ? [...saved as Testimonio[], ...testimonios] : testimonios;
+  } catch (error) {
+    console.warn("No se pudieron leer los testimonios demo guardados.", error);
+    return testimonios;
+  }
+}
 
 const badgeStyle: React.CSSProperties = {
   display: "inline-block", background: "white", border: "1px solid var(--sand)",
@@ -134,7 +147,7 @@ export default function TestimoniosSection() {
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (cancelled || !data) return;
-        const list: Testimonio[] = data.testimonios ?? [];
+        const list = includeDemoTestimonials(data.testimonios ?? []);
         setTestimonios(list);
         orderRef.current = shuffle(list.map((_, i) => i));
       })
@@ -198,6 +211,26 @@ export default function TestimoniosSection() {
     if (!currentUser || !form.vinculo.trim() || !form.texto.trim() || form.rating === 0) return;
     dispatchFormulario({ type: "submitStart" });
     try {
+      if (LOCAL_DEMO) {
+        const saved: Testimonio[] = JSON.parse(localStorage.getItem(DEMO_TESTIMONIALS_KEY) ?? "[]");
+        const newTestimonial: Testimonio = {
+          id: Date.now(),
+          nombre: currentUser.username,
+          rol: form.vinculo,
+          texto: form.texto.trim(),
+          rating: form.rating,
+          creado_en: new Date().toISOString(),
+        };
+        const localTestimonials = [newTestimonial, ...saved];
+        localStorage.setItem(DEMO_TESTIMONIALS_KEY, JSON.stringify(localTestimonials));
+        const list = [newTestimonial, ...testimonios.filter(item => item.id !== newTestimonial.id)];
+        setTestimonios(list);
+        orderRef.current = shuffle(list.map((_, i) => i));
+        setCurrent(0);
+        dispatchFormulario({ type: "submitSuccess" });
+        setTimeout(() => dispatchFormulario({ type: "successHidden" }), 4000);
+        return;
+      }
       const res = await fetch("/api/testimonios", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
@@ -213,7 +246,7 @@ export default function TestimoniosSection() {
         const refreshRes = await fetch("/api/testimonios");
         if (refreshRes.ok) {
           const data = await refreshRes.json();
-          const list: Testimonio[] = data.testimonios ?? [];
+          const list = includeDemoTestimonials(data.testimonios ?? []);
           setTestimonios(list);
           orderRef.current = shuffle(list.map((_, i) => i));
         }

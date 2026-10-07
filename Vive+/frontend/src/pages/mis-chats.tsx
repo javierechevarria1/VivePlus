@@ -50,6 +50,7 @@ export default function MisChatsPage({ initialUser, initialConvs }: { initialUse
 
   useEffect(() => {
     if (!user) return;
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") return;
     const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
     const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
     if (!key || !cluster) return;
@@ -194,4 +195,3 @@ export default function MisChatsPage({ initialUser, initialConvs }: { initialUse
     </>
   );
 }
-

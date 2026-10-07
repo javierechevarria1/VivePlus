@@ -4,6 +4,8 @@ import { jwtVerify } from "jose";
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 export async function proxy(req: NextRequest) {
+  if (process.env.LOCAL_DEMO === "true") return NextResponse.next();
+
   const { pathname } = req.nextUrl;
 
   

@@ -71,6 +71,7 @@ export default function ChatNotifier() {
 
   useEffect(() => {
     if (!session?.id || medicos.length === 0) return;
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") return;
     const user = session;
 
     if (!pusherRef.current) {

@@ -273,6 +273,10 @@ export default function SegundaManoPage({ initialConnectConnected = null }: { in
     const onStockUpdate = () => fetchProductos();
     window.addEventListener("stock-actualizado", onStockUpdate);
 
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") {
+      return () => window.removeEventListener("stock-actualizado", onStockUpdate);
+    }
+
     const pusherClient = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
     });

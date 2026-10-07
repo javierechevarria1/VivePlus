@@ -748,6 +748,7 @@ function useActividadesRealtime(
   const pusherRef = useRef<PusherClient | null>(null);
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") return;
     pusherRef.current = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
     });
@@ -1160,4 +1161,3 @@ export default function RecursosPage() {
     </div>
   );
 }
-

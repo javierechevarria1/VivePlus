@@ -137,6 +137,7 @@ export function useCuidadorChat(currentUser: CurrentUser, cuidadores: Cuidador[]
 
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") return;
     pusherRef.current = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
       channelAuthorization: { endpoint: "/api/pusher-auth", transport: "ajax" },
@@ -509,4 +510,3 @@ export function useValoracion(currentUser: CurrentUser, setCuidadores: React.Dis
 
   return { valorarOpen, setValorarOpen, valorForm, setValorForm, submittingValor, valorSuccess, setValorSuccess, valorModalRef, valorScrollRef, handleValoracion };
 }
-

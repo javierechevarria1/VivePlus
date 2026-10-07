@@ -613,6 +613,7 @@ function useStockSync(setProductos: React.Dispatch<React.SetStateAction<Producto
   }, [setProductos]);
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") return;
     const pusherKey     = process.env.NEXT_PUBLIC_PUSHER_KEY;
     const pusherCluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
     if (!pusherKey || !pusherCluster) return;

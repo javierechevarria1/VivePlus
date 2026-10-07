@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getSessionUser } from '@/lib/auth';
+import { isLocalDemoEnabled } from '@/lib/local-demo-data';
 import ComunidadPage, { type CurrentUser, type SolicitudesIniciales } from '@/frontend/src/pages/comunidad';
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export default async function Page() {
   const isMedico = user?.rol === "medico";
 
   let initialSolicitudes: SolicitudesIniciales = { recibidas: [], amigos: [], enviadas: [] };
-  if (user && !isMedico) {
+  if (user && !isMedico && !isLocalDemoEnabled()) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/solicitudes?user_id=${user.id}`, { cache: "no-store" });
       if (res.ok) {

@@ -235,6 +235,7 @@ export function useComunidadData(currentUser: CurrentUser | null, initialSolicit
 
   /* ── Pusher ── */
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") return;
     const pusher = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
       channelAuthorization: { endpoint: "/api/pusher-auth", transport: "ajax" },

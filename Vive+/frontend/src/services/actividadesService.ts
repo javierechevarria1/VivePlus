@@ -1,5 +1,20 @@
 import httpClient, { extractApiError } from '../api/httpClient';
 
+const LOCAL_DEMO = process.env.NEXT_PUBLIC_LOCAL_DEMO === 'true';
+const DEMO_SIGNUPS_KEY = 'viveplus:demo:actividad-inscripciones:v1';
+
+function readDemoSignups(): Record<string, number[]> {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(DEMO_SIGNUPS_KEY) ?? '{}');
+    return value && typeof value === 'object' && !Array.isArray(value)
+      ? value as Record<string, number[]>
+      : {};
+  } catch (error) {
+    console.warn('No se pudieron leer las inscripciones demo guardadas.', error);
+    return {};
+  }
+}
+
 export type CatActividadDB = {
   id: number;
   nombre: string;
@@ -65,7 +80,10 @@ export const actividadesService = {
   async getActividades(usuarioId?: number): Promise<{ actividades: Actividad[]; inscritas: number[] }> {
     const url = usuarioId ? `/recursos?usuario_id=${usuarioId}` : '/recursos';
     const { data } = await httpClient.get(url);
-    return { actividades: data.actividades ?? [], inscritas: data.inscritas ?? [] };
+    const inscritas = LOCAL_DEMO && usuarioId
+      ? readDemoSignups()[String(usuarioId)] ?? []
+      : data.inscritas ?? [];
+    return { actividades: data.actividades ?? [], inscritas };
   },
 
   async getActividadesAdmin(): Promise<ActividadAdmin[]> {
@@ -106,6 +124,15 @@ export const actividadesService = {
   },
 
   async inscribirse(body: object): Promise<void> {
+    if (LOCAL_DEMO) {
+      const signup = body as { actividad_id?: number; usuario_id?: number };
+      if (!signup.actividad_id || !signup.usuario_id) throw new Error('Faltan datos para la inscripción demo.');
+      const signups = readDemoSignups();
+      const key = String(signup.usuario_id);
+      signups[key] = [...new Set([...(signups[key] ?? []), signup.actividad_id])];
+      localStorage.setItem(DEMO_SIGNUPS_KEY, JSON.stringify(signups));
+      return;
+    }
     try {
       await httpClient.post('/recursos', body);
     } catch (e) {
@@ -114,6 +141,15 @@ export const actividadesService = {
   },
 
   async desinscribirse(body: object): Promise<{ inscritos?: number }> {
+    if (LOCAL_DEMO) {
+      const signup = body as { actividad_id?: number; usuario_id?: number };
+      if (!signup.actividad_id || !signup.usuario_id) throw new Error('Faltan datos para cancelar la inscripción demo.');
+      const signups = readDemoSignups();
+      const key = String(signup.usuario_id);
+      signups[key] = (signups[key] ?? []).filter(id => id !== signup.actividad_id);
+      localStorage.setItem(DEMO_SIGNUPS_KEY, JSON.stringify(signups));
+      return {};
+    }
     const { data } = await httpClient.delete('/recursos', { data: body });
     return data ?? {};
   },

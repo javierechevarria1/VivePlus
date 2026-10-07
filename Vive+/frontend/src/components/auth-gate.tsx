@@ -13,6 +13,24 @@ type Mode     = "login" | "register";
 type LegalKey = ClaveRegistro | null;
 
 const PROTECTED_ROUTES: string[] = ["/salud", "/comunidad", "/recursos", "/mis-pedidos"];
+const LOCAL_DEMO = process.env.NEXT_PUBLIC_LOCAL_DEMO === "true";
+
+function startLocalDemoSession(email: string, username?: string, rol = "usuario") {
+  const user = {
+    id: 9001,
+    email,
+    username: username?.trim() || email.split("@")[0],
+    rol,
+    plan_id: 2,
+    plan_activo: true,
+  };
+  sessionStorage.setItem("r65_authed", "true");
+  sessionStorage.setItem("r65_user:v1", JSON.stringify(user));
+  localStorage.setItem("viveplus:demo:session:v1", JSON.stringify(user));
+  window.dispatchEvent(new CustomEvent("relatia-auth-changed"));
+  window.dispatchEvent(new CustomEvent("r65:authed"));
+  return user;
+}
 
 
 const PLANES = [
@@ -721,6 +739,13 @@ function useAuthGateState(pathname: string | null) {
     e.preventDefault();
     setLoading(true); setLoginError("");
     try {
+      if (LOCAL_DEMO) {
+        const user = startLocalDemoSession(loginEmail);
+        setAuthed(true);
+        if (user.rol === "admin") window.location.href = "/admin-marketplace";
+        else closeAuthModalFn();
+        return;
+      }
       const r = await fetch("/api/login", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: loginEmail, password: loginPass }),
@@ -824,6 +849,23 @@ function useAuthGateState(pathname: string | null) {
       setAuthed(true);
       setChecked(true);
       return;
+    }
+
+    if (LOCAL_DEMO) {
+      const demoUser = localStorage.getItem("viveplus:demo:session:v1");
+      if (demoUser) {
+        try {
+          const user = JSON.parse(demoUser);
+          sessionStorage.setItem("r65_authed", "true");
+          sessionStorage.setItem("r65_user:v1", JSON.stringify(user));
+          setAuthed(true);
+          setChecked(true);
+          return;
+        } catch (error) {
+          console.warn("No se pudo recuperar la sesión demo guardada.", error);
+          localStorage.removeItem("viveplus:demo:session:v1");
+        }
+      }
     }
 
     // La cookie r65_token ahora es HttpOnly (no legible desde JS), así que
@@ -1057,6 +1099,12 @@ function useAuthGateState(pathname: string | null) {
     e.preventDefault();
     setLoginError("");
     if (!loginEmail || !loginPass) { setLoginError("Rellena todos los campos."); return; }
+    if (LOCAL_DEMO) {
+      startLocalDemoSession(loginEmail);
+      setAuthed(true);
+      setShowAuthModal(false);
+      return;
+    }
     setLoading(true);
     try {
       const res  = await fetch("/api/login", {
@@ -1088,6 +1136,13 @@ function useAuthGateState(pathname: string | null) {
     e.preventDefault();
     setLoginError("");
     if (!orgNombre || !orgPass) { setLoginError("Rellena todos los campos."); return; }
+    if (LOCAL_DEMO) {
+      startLocalDemoSession(orgNombre, orgNombre, "usuario_organizacion");
+      setAuthed(true);
+      setShowAuthModal(false);
+      window.location.href = "/organizaciones";
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/login", {
@@ -1134,6 +1189,22 @@ function useAuthGateState(pathname: string | null) {
     if (regPass !== regPass2)  { setRegError("Las contraseñas no coinciden."); return; }
     if (!acceptedTerms)        { setAcceptError(true); return; }
 
+    if (LOCAL_DEMO && !regEsMedico) {
+      const user = startLocalDemoSession(regEmail, regName, regRol);
+      localStorage.setItem("viveplus:demo:registered-user:v1", JSON.stringify({
+        email: user.email,
+        username: user.username,
+        rol: user.rol,
+        registeredAt: new Date().toISOString(),
+      }));
+      setSuccess(true);
+      setTimeout(() => {
+        setAuthed(true);
+        setShowAuthModal(false);
+        setSuccess(false);
+      }, 1200);
+      return;
+    }
 
     if (regEsMedico) {
       setMedicoStep("docs");
