@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Linkedin, Heart } from "lucide-react";
+import { Github, Linkedin, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const SERVICES = [
@@ -36,6 +36,7 @@ const LEGAL: { label: string; href: string }[] = [
 
 const SOCIALS = [
   { href: "https://www.linkedin.com/in/javier-echevarría-traspuesto-ab3755258/", icon: Linkedin, label: "LinkedIn" },
+  { href: "https://github.com/javierechevarria1", icon: Github, label: "GitHub" },
 ];
 
 export default function Footer() {

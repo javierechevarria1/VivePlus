@@ -1,5 +1,6 @@
 const nextConfig = {
   reactStrictMode: false,
+  devIndicators: false,
   env: {
     LOCAL_DEMO: process.env.LOCAL_DEMO ?? "true",
     NEXT_PUBLIC_LOCAL_DEMO: process.env.NEXT_PUBLIC_LOCAL_DEMO ?? "true",

@@ -4,6 +4,27 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import PusherClient from "pusher-js";
 import { type CurrentUser, type Msg, type Person, type Solicitud, type SolicitudesIniciales, fmt, safeParseLatLng } from "./helpers";
 
+const DEMO_FRIENDS: Person[] = [
+  {
+    id: 9002, name: "Carmen Ruiz", age: 68, distance: "0,8 km", distancia_km: 0.8,
+    photo: "https://api.dicebear.com/9.x/adventurer/png?seed=Carmen-Ruiz",
+    status: "online", bio: "Me encanta pasear y compartir buenos momentos.", barrio: "Guarnizo",
+    unread: 0, messages: [],
+  },
+  {
+    id: 9003, name: "Luis García", age: 72, distance: "1,4 km", distancia_km: 1.4,
+    photo: "https://api.dicebear.com/9.x/adventurer/png?seed=Luis-Garcia",
+    status: "away", bio: "Aficionado a la música y a las rutas tranquilas.", barrio: "Astillero",
+    unread: 0, messages: [],
+  },
+  {
+    id: 9004, name: "María López", age: 65, distance: "2,1 km", distancia_km: 2.1,
+    photo: "https://api.dicebear.com/9.x/adventurer/png?seed=Maria-Lopez",
+    status: "online", bio: "Disfruto del jardín, la lectura y conocer gente.", barrio: "Maliaño",
+    unread: 0, messages: [],
+  },
+];
+
 // Hooks de la página Comunidad (extraídos de comunidad.tsx).
 export function useCurrentUser(initialUser: CurrentUser | null = null) {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(initialUser);
@@ -172,7 +193,11 @@ export function useComunidadData(currentUser: CurrentUser | null, initialSolicit
 
   /* — Solicitudes — */
   const [solicitudesRecibidas, setSolicitudesRecibidas] = useState<Solicitud[]>(initialSolicitudes.recibidas);
-  const [amigos,               setAmigos]               = useState<number[]>(initialSolicitudes.amigos);
+  const [amigos,               setAmigos]               = useState<number[]>(() =>
+    process.env.NEXT_PUBLIC_LOCAL_DEMO === "true" && initialSolicitudes.amigos.length === 0
+      ? DEMO_FRIENDS.map(person => person.id)
+      : initialSolicitudes.amigos
+  );
   const [enviadas,             setEnviadas]             = useState<number[]>(initialSolicitudes.enviadas);
   const [enviandoSolicitud,    setEnviandoSolicitud]    = useState<number | null>(null);
 
@@ -399,6 +424,12 @@ export function useComunidadData(currentUser: CurrentUser | null, initialSolicit
 
   useEffect(() => {
     if (!currentUser) return;
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") {
+      setPeople(DEMO_FRIENDS.filter(person => person.distancia_km <= range));
+      setLoadingUsers(false);
+      setLocError(null);
+      return;
+    }
     if (!navigator.geolocation) {
       const tid = setTimeout(() => setLocError("Tu navegador no soporta geolocalización."), 0);
       return () => clearTimeout(tid);
@@ -495,7 +526,13 @@ export function useComunidadData(currentUser: CurrentUser | null, initialSolicit
     setChatError(null);
     setInput(""); // Limpiar input al cambiar de persona
     setPeople(prev => prev.map(x => x.id === p.id ? { ...x, unread: 0 } : x));
-    setSelected({ ...p, unread: 0, messages: [] });
+    const selectedPerson = { ...p, unread: 0, messages: p.messages };
+    setSelected(selectedPerson);
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") {
+      setLoadingChat(false);
+      return;
+    }
+    setSelected({ ...selectedPerson, messages: [] });
     setLoadingChat(true);
     fetch(`/api/cercania-history?user_from=${currentUser.id}&user_to=${p.id}`)
       .then(r => r.json())
@@ -553,6 +590,22 @@ export function useComunidadData(currentUser: CurrentUser | null, initialSolicit
     if (!input.trim() || !selected || !currentUser) return;
     const text = input.trim();
     setInput("");
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === "true") {
+      const message: Msg = {
+        id: Date.now(),
+        from: "me",
+        text,
+        time: fmt(new Date().toISOString()),
+      };
+      setPeople(prev => prev.map(person =>
+        person.id === selected.id
+          ? { ...person, messages: [...person.messages, message] }
+          : person
+      ));
+      setSelected(prev => prev ? { ...prev, messages: [...prev.messages, message] } : prev);
+      setChatError(null);
+      return;
+    }
     try {
       const res = await fetch("/api/cercania-send", {
         method:  "POST",

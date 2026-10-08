@@ -32,6 +32,25 @@ function startLocalDemoSession(email: string, username?: string, rol = "usuario"
   return user;
 }
 
+async function startLocalDemoLogin(email: string, password: string) {
+  if (email.trim().toLowerCase() === "admin@relatia55.com" && password === "Admin1234!") {
+    const response = await fetch("/api/demo-admin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "No se pudo iniciar la sesión de administrador.");
+
+    sessionStorage.setItem("r65_authed", "true");
+    sessionStorage.setItem("r65_user:v1", JSON.stringify(data.user));
+    window.dispatchEvent(new CustomEvent("relatia-auth-changed"));
+    window.dispatchEvent(new CustomEvent("r65:authed"));
+    return data.user;
+  }
+  return startLocalDemoSession(email);
+}
+
 
 const PLANES = [
   {
@@ -740,9 +759,9 @@ function useAuthGateState(pathname: string | null) {
     setLoading(true); setLoginError("");
     try {
       if (LOCAL_DEMO) {
-        const user = startLocalDemoSession(loginEmail);
+        const user = await startLocalDemoLogin(loginEmail, loginPass);
         setAuthed(true);
-        if (user.rol === "admin") window.location.href = "/admin-marketplace";
+        if (user.rol === "admin") window.location.href = "/admin";
         else closeAuthModalFn();
         return;
       }
@@ -1100,9 +1119,17 @@ function useAuthGateState(pathname: string | null) {
     setLoginError("");
     if (!loginEmail || !loginPass) { setLoginError("Rellena todos los campos."); return; }
     if (LOCAL_DEMO) {
-      startLocalDemoSession(loginEmail);
-      setAuthed(true);
-      setShowAuthModal(false);
+      setLoading(true);
+      try {
+        const user = await startLocalDemoLogin(loginEmail, loginPass);
+        setAuthed(true);
+        setShowAuthModal(false);
+        if (user.rol === "admin") window.location.href = "/admin";
+      } catch (err) {
+        setLoginError(err instanceof Error ? err.message : "No se pudo iniciar sesión.");
+      } finally {
+        setLoading(false);
+      }
       return;
     }
     setLoading(true);

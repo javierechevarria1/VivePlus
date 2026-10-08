@@ -605,7 +605,7 @@ function VitaHeroSection({ user }: { user: { rol?: string } | null }) {
           <section className={`vt-scene ${active(7) ? "is-active" : ""}`}>
             <div className="vt-frame vt-g08">
               <div className="vt-card lift">
-                <Image src={VITA_IMGS.call} alt="Familia sonriendo y conectada gracias a VIVE+" width={800} height={600} style={{ aspectRatio: "4/3", width: "100%", height: "auto" }} />
+                <Image src={VITA_IMGS.call} alt="Familia sonriendo y conectada gracias a VIVE+" width={800} height={600} loading="eager" style={{ aspectRatio: "4/3", width: "100%", height: "auto" }} />
                 <p className="vt-caption">Una <b>conexión</b> · una vida más plena</p>
               </div>
               <div>
@@ -917,7 +917,7 @@ function Feature3DCard({ f, i }: { f: (typeof FEATURES)[0]; i: number }) {
             style={{ position: "absolute", inset: 0, opacity: 0, pointerEvents: "none", zIndex: 5, borderRadius: 22, transition: "opacity 0.3s" }}
           />
           <div className="feature-img-wrap">
-            <Image fill sizes="100vw" src={f.img} alt={f.title} className="feature-img" style={{ objectFit: "cover", borderRadius: "22px 22px 0 0", transition: "transform 0.15s ease" }} />
+            <Image fill sizes="(max-width: 480px) calc(100vw - 24px), (max-width: 768px) calc(100vw - 32px), 320px" src={f.img} alt={f.title} className="feature-img" style={{ objectFit: "cover", borderRadius: "22px 22px 0 0", transition: "transform 0.15s ease" }} />
             <div className="feature-icon-badge">
               <span className="feature-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "#EC4899", transition: "transform 0.3s ease" }}>{f.icon}</span>
             </div>

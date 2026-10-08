@@ -9,6 +9,7 @@ import { type Person, QUICK_REPLIES, statusColor, statusLabel, formatDuration } 
 // Panel principal de chat de comunidad (extraído de comunidad.tsx).
 const CM_EMPTY_ICON: React.CSSProperties = { width: 48, height: 48, borderRadius: "50%", background: "#FDF2F8", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" };
 const CM_CHAT_ERROR: React.CSSProperties = { backgroundColor: "#FFF0F0", border: "1px solid #FFCDD5", color: "#E74C3C", padding: "10px 14px", borderRadius: "10px", fontSize: "13px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" };
+const LOCAL_DEMO = process.env.NEXT_PUBLIC_LOCAL_DEMO === "true";
 const CM_MSG_BTN: React.CSSProperties = { marginTop: 20, width: "100%", background: "var(--teal,#EC4899)", color: "white", border: "none", borderRadius: 12, padding: "12px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans',sans-serif" };
 const CM_ELIMINAR_BTN: React.CSSProperties = { marginTop: 8, width: "100%", background: "white", color: "#E74C3C", border: "1.5px solid #FFCDD5", borderRadius: 12, padding: "11px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "background-color .2s" };
 
@@ -178,6 +179,14 @@ export function ComunidadChatMain({
           </div>
 
           <div className="chat-input-area">
+            {LOCAL_DEMO && (
+              <div role="status" style={CM_CHAT_ERROR}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 500 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  Demo local: los mensajes no se guardan y desaparecerán al salir de Comunidad o recargar la página.
+                </span>
+              </div>
+            )}
             {chatError && (
               <div style={CM_CHAT_ERROR}>
                 <span style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 500 }}>

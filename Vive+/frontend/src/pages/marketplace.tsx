@@ -310,7 +310,7 @@ function AnimatedCard({ p, index, onStockChange, isAdmin, comprarDisabled, authe
         }}
       >
         <Image
-          fill sizes="100vw"
+          fill sizes="(max-width: 640px) calc(100vw - 48px), (max-width: 900px) calc((100vw - 64px) / 2), (max-width: 1520px) calc((100vw - 360px) / 3), 380px"
           src={p.imagen && (p.imagen.startsWith("/") || p.imagen.startsWith("http")) ? p.imagen : "/img/placeholder.png"}
           alt={p.nombre}
           style={{

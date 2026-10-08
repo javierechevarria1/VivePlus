@@ -16,6 +16,8 @@ import {
   Recuento, Segmentos, Vacio, useConfirmacion,
 } from "@/frontend/src/components/admin/primitives";
 
+const LOCAL_DEMO = process.env.NEXT_PUBLIC_LOCAL_DEMO === "true";
+
 type Spec = { label: string; value: string };
 
 type Producto = {
@@ -297,19 +299,22 @@ function ProductoForm({ initial, onSave, onCancel, saving, categorias, onCatUpda
 
 // Retirar un producto de segunda mano manda un email al vendedor, así que el
 // motivo es obligatorio: no es el mismo diálogo que borrar del catálogo propio.
-function RetirarSegundaManoModal({ producto, motivo, setMotivo, ocupado, onCancel, onConfirm }: {
+function RetirarSegundaManoModal({ producto, motivo, setMotivo, ocupado, onCancel, onConfirm, demoLocal }: {
   producto: ProductoSegundaMano;
   motivo: string;
   setMotivo: (v: string) => void;
   ocupado: boolean;
   onCancel: () => void;
   onConfirm: () => void;
+  demoLocal: boolean;
 }) {
   return (
     <Modal titulo="Retirar producto" subtitulo={producto.nombre} onCerrar={onCancel} ancho={460}>
       <p style={{ fontSize: T.dato, color: C.suave, margin: "0 0 16px", lineHeight: 1.6 }}>
-        Se enviará un email a <strong style={{ color: C.texto }}>{producto.vendedor_nombre}</strong> con
-        el motivo que escribas. Esta acción no se puede deshacer.
+        {demoLocal
+          ? <>El producto se retirará solo de esta vista de demostración. No se enviará ningún email al vendedor.</>
+          : <>Se enviará un email a <strong style={{ color: C.texto }}>{producto.vendedor_nombre}</strong> con
+            el motivo que escribas. Esta acción no se puede deshacer.</>}
       </p>
 
       <label style={{ display: "block", fontSize: T.micro, fontWeight: 600, color: C.suave, marginBottom: 6 }} htmlFor="segunda-mano-motivo">
@@ -337,7 +342,7 @@ function RetirarSegundaManoModal({ producto, motivo, setMotivo, ocupado, onCance
             cursor: !motivo.trim() || ocupado ? "not-allowed" : "pointer",
           }}
         >
-          <Trash2 size={14} /> {ocupado ? "Retirando…" : "Retirar y notificar"}
+          <Trash2 size={14} /> {ocupado ? "Retirando…" : demoLocal ? "Retirar (solo demo)" : "Retirar y notificar"}
         </button>
       </div>
     </Modal>
@@ -351,6 +356,7 @@ export default function AdminMarketplacePage({ initialSegundaMano }: { initialSe
   const [categorias,   setCategorias]   = useState<CatProductoDB[]>([]);
   const [cargando,     setCargando]     = useState(true);
   const [error,        setError]        = useState<string | null>(null);
+  const [avisoDemo,    setAvisoDemo]    = useState<string | null>(null);
   const [creando,      setCreando]      = useState(false);
   const [editandoId,   setEditandoId]   = useState<number | null>(null);
   const [guardando,    setGuardando]    = useState(false);
@@ -395,6 +401,21 @@ export default function AdminMarketplacePage({ initialSegundaMano }: { initialSe
   useEffect(() => { void fetchProductos(); }, []);
 
   const handleCreate = async (form: FormData) => {
+    if (LOCAL_DEMO) {
+      const body = bodyFromForm(form);
+      const categoria = categorias.find(c => c.id === body.productos_categoria_id)?.nombre ?? "";
+      setProductos(prev => [...prev, {
+        ...body,
+        id: Math.max(0, ...prev.map(p => p.id)) + 1,
+        precio: `€${body.precio.toFixed(2)}`,
+        categoria,
+        tamano_paquete: body.tamano_paquete,
+      }]);
+      setCreando(false);
+      setError(null);
+      setAvisoDemo("Producto añadido solo en esta sesión de demostración; no se ha guardado.");
+      return;
+    }
     setGuardando(true);
     try {
       await marketplaceService.crearProducto(bodyFromForm(form));
@@ -410,6 +431,20 @@ export default function AdminMarketplacePage({ initialSegundaMano }: { initialSe
 
   const handleEdit = async (form: FormData) => {
     if (editandoId == null) return;
+    if (LOCAL_DEMO) {
+      const body = bodyFromForm(form);
+      const categoria = categorias.find(c => c.id === body.productos_categoria_id)?.nombre;
+      setProductos(prev => prev.map(producto => producto.id === editandoId ? {
+        ...producto,
+        ...body,
+        precio: `€${body.precio.toFixed(2)}`,
+        categoria: categoria ?? producto.categoria,
+      } : producto));
+      setEditandoId(null);
+      setError(null);
+      setAvisoDemo("Cambios aplicados solo en esta sesión de demostración; no se han guardado.");
+      return;
+    }
     setGuardando(true);
     try {
       await marketplaceService.editarProducto(editandoId, bodyFromForm(form));
@@ -425,6 +460,13 @@ export default function AdminMarketplacePage({ initialSegundaMano }: { initialSe
 
   const confirmarRetirada = async () => {
     if (!retirar || !motivo.trim()) return;
+    if (LOCAL_DEMO) {
+      setSegundaMano(prev => prev.filter(producto => producto.id !== retirar.id));
+      setRetirar(null);
+      setMotivo("");
+      setAvisoDemo("Producto retirado solo de esta vista de demostración; no se ha enviado ninguna notificación.");
+      return;
+    }
     setRetirando(true);
     try {
       const res = await fetch("/api/segunda-mano", {
@@ -520,6 +562,11 @@ export default function AdminMarketplacePage({ initialSegundaMano }: { initialSe
           ocupado={borrado.ocupado}
           onCancelar={borrado.cancelar}
           onConfirmar={() => borrado.ejecutar(async p => {
+            if (LOCAL_DEMO) {
+              setProductos(prev => prev.filter(producto => producto.id !== p.id));
+              setAvisoDemo("Producto eliminado solo en esta sesión de demostración; no se ha modificado la base de datos.");
+              return;
+            }
             try {
               await marketplaceService.eliminarProducto(p.id);
               await fetchProductos();
@@ -538,9 +585,12 @@ export default function AdminMarketplacePage({ initialSegundaMano }: { initialSe
           ocupado={retirando}
           onCancel={() => { setRetirar(null); setMotivo(""); }}
           onConfirm={confirmarRetirada}
+          demoLocal={LOCAL_DEMO}
         />
       )}
 
+      {LOCAL_DEMO && <Aviso tono="aviso">Modo demo: los cambios de productos solo se mantienen mientras esta página siga abierta. Se perderán al salir o recargar, y no se modifica la base de datos.</Aviso>}
+      {avisoDemo && <Aviso tono="aviso">{avisoDemo}</Aviso>}
       {error && <Aviso>{error}</Aviso>}
 
       {esMarketplace && creando && (
