@@ -223,6 +223,17 @@ function handleLocalDemoApi(req: NextRequest, slug: string): NextResponse {
       }
       case "organizaciones": return NextResponse.json({ organizaciones: DEMO_ORGANIZATIONS });
       case "salud": return NextResponse.json({ medicos: DEMO_CAREGIVERS });
+      case "admin-organizaciones": return NextResponse.json({
+        organizaciones: DEMO_ORGANIZATIONS.map(organizacion => ({
+          ...organizacion,
+          usuario_organizacion_id: null,
+          servicios: [],
+        })),
+        demo: true,
+      });
+      case "admin-pedidos": return NextResponse.json({ ok: true, data: [], demo: true });
+      case "admin-cuidadores": return NextResponse.json({ cuidadores: [], demo: true });
+      case "devoluciones": return NextResponse.json({ ok: true, data: [], demo: true });
       case "testimonios": return NextResponse.json({ testimonios: DEMO_TESTIMONIALS });
       case "anuncios": {
         if (searchParams.has("id")) return NextResponse.json({ ok: true });
